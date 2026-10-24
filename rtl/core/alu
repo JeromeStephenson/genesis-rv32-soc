@@ -1,0 +1,89 @@
+`timescale 1ns / 1ps
+
+
+
+`include "riscv_defs.sv"
+
+module alu #(
+    parameter int DATA_WIDTH = 32
+)(
+    input  logic [DATA_WIDTH-1:0] operand_1,
+    input  logic [DATA_WIDTH-1:0] operand_2,
+    input  logic [3:0]            alu_op,
+
+    output logic [DATA_WIDTH-1:0] result,
+    output logic                  zero            // 1 if result == 0
+);
+
+    // -------------------------------------------------------------------------
+    // Shift amount (RV32I only uses lower 5 bits)
+    // -------------------------------------------------------------------------
+    logic [4:0] shamt;
+    assign shamt = operand_2[4:0];
+
+    // -------------------------------------------------------------------------
+    // Parallel computation of all operations
+    // -------------------------------------------------------------------------
+    logic [DATA_WIDTH-1:0] add_sub_result;
+    logic [DATA_WIDTH-1:0] and_result;
+    logic [DATA_WIDTH-1:0] or_result;
+    logic [DATA_WIDTH-1:0] xor_result;
+    logic [DATA_WIDTH-1:0] sll_result;
+    logic [DATA_WIDTH-1:0] srl_result;
+    logic [DATA_WIDTH-1:0] sra_result;
+    logic [DATA_WIDTH-1:0] slt_result;
+    logic [DATA_WIDTH-1:0] sltu_result;
+
+    // ADD / SUB (selected by alu_op)
+    assign add_sub_result = (alu_op == `ALU_SUB) ? (operand_1 - operand_2)
+                                                   : (operand_1 + operand_2);
+
+    // Logical
+    assign and_result = operand_1 & operand_2;
+    assign or_result  = operand_1 | operand_2;
+    assign xor_result = operand_1 ^ operand_2;
+
+    // Shifts
+    assign sll_result = operand_1 << shamt;
+    assign srl_result = operand_1 >> shamt;
+    assign sra_result = $signed(operand_1) >>> shamt;   // Arithmetic shift
+
+    // Set Less Than (signed)
+    assign slt_result  = {{(DATA_WIDTH-1){1'b0}},
+                          ($signed(operand_1) < $signed(operand_2))};
+
+    // Set Less Than Unsigned
+    assign sltu_result = {{(DATA_WIDTH-1){1'b0}},
+                          (operand_1 < operand_2)};
+
+    // -------------------------------------------------------------------------
+    // Output Mux
+    // -------------------------------------------------------------------------
+    always_comb begin
+        case (alu_op)
+            `ALU_ADD:     result = add_sub_result;
+            `ALU_SUB:     result = add_sub_result;
+            `ALU_AND:     result = and_result;
+            `ALU_OR:      result = or_result;
+            `ALU_XOR:     result = xor_result;
+            `ALU_SLL:     result = sll_result;
+            `ALU_SRL:     result = srl_result;
+            `ALU_SRA:     result = sra_result;
+            `ALU_SLT:     result = slt_result;
+            `ALU_SLTU:    result = sltu_result;
+            `ALU_PASS_A:  result = operand_1;       // For AUIPC (PC + imm)
+            `ALU_PASS_B:  result = operand_2;       // For LUI (imm only)
+            default:      result = '0;
+        endcase
+    end
+
+    // Zero flag (useful for branches, even if branch_unit compares directly)
+    assign zero = (result == '0);
+
+    // -------------------------------------------------------------------------
+    // Assertions
+    // -------------------------------------------------------------------------
+  
+
+endmodule
+
