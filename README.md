@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 ![FreeRTOS](https://img.shields.io/badge/OS-FreeRTOS%20Compatible-orange.svg)
 
-**Genesis-RV32-SoC** is a custom, from-scratch 32-bit RISC-V (RV32I) System-on-Chip designed to successfully boot and run **FreeRTOS**. Built entirely in SystemVerilog, it features a fully pipelined 5-stage CPU, comprehensive Machine-mode CSR support, and a standard SiFive-compatible peripheral ecosystem (CLINT, PLIC, UART, GPIO).
+**Genesis-RV32-SoC** is a custom, from-scratch,FPGA-ready 32-bit RISC-V (RV32I) System-on-Chip designed to successfully boot and run **FreeRTOS**. Built entirely in SystemVerilog, it features a fully pipelined 5-stage CPU, comprehensive Machine-mode CSR support, and a standard SiFive-compatible peripheral ecosystem (CLINT, PLIC, UART, GPIO).
 
 > **Repository Description:** A custom, from-scratch 32-bit RISC-V (RV32I) System-on-Chip in SystemVerilog. It features a 5-stage pipelined CPU, FreeRTOS boot support, and SiFive-compatible peripherals (CLINT, PLIC, UART, GPIO).
 
@@ -93,14 +93,14 @@ All peripherals follow the **SiFive Standard Address Map**, ensuring drop-in com
 ```text
 genesis-rv32-soc/
 ├── rtl/
-│   ├── core/             # 5-stage pipeline, hazard unit, CSR file, trap controller
+│   ├── core/             # 5-stage pipeline, hazard unit, CSR file, trap controller,IMEM and byte-masked DMEM
 │   ├── peripherals/      # CLINT, PLIC, UART, GPIO
-│   ├── memory/           # IMEM and byte-masked DMEM
+│   |           
 │   └── soc/              # Top-level SoC integration and address decoding
 ├── tb/                   # Testbenches (UART terminal monitor and PC trace logger)
-├── sim/                  # Simulation scripts and Makefiles
-├── docs/                 # Architecture diagrams and waveform captures
-└── sw/                   # FreeRTOS port, linker scripts, and bare-metal examples
+                
+|                          
+└── freertos_examples/      # FreeRTOS port, linker scripts, simulation scripts, Makefiles and bare-metal examples
 ```
 
 ---
