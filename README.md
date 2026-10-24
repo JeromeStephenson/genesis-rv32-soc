@@ -93,14 +93,14 @@ All peripherals follow the **SiFive Standard Address Map**, ensuring drop-in com
 ```text
 genesis-rv32-soc/
 ├── rtl/
-│   ├── core/             # 5-stage pipeline, hazard unit, CSR file, trap controller
+│   ├── core/             # 5-stage pipeline, hazard unit, CSR file, trap controller,IMEM and byte-masked DMEM
 │   ├── peripherals/      # CLINT, PLIC, UART, GPIO
-│   ├── memory/           # IMEM and byte-masked DMEM
+│   |           
 │   └── soc/              # Top-level SoC integration and address decoding
 ├── tb/                   # Testbenches (UART terminal monitor and PC trace logger)
-├── sim/                  # Simulation scripts and Makefiles
-├── docs/                 # Architecture diagrams and waveform captures
-└── sw/                   # FreeRTOS port, linker scripts, and bare-metal examples
+                
+|                          
+└── freertos_examples/      # FreeRTOS port, linker scripts, simulation scripts, Makefiles and bare-metal examples
 ```
 
 ---
